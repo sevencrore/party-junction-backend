@@ -157,7 +157,7 @@ router.post("/create", upload.fields([
     console.log(req.body);
     try {
         // Extract data from the request
-        const { category_id,vendor_id,location_description,location_lat,location_lang,title, description,host_name,city_id,area } = req.body;
+        const { category_id,vendor_id,location_description,location_lat,location_lang,title, description,host_name,city_id,area,date } = req.body;
 
         // Construct the image paths
         const imgPath = req.files["img"] ? `/uploads/event/${req.files["img"][0].filename}` : null;
@@ -168,7 +168,7 @@ router.post("/create", upload.fields([
 
         // Save the event with img and bg_img paths
         const newEvent = new Event({
-            category_id,vendor_id,location_description,location_lat,location_lang,title, description,host_name,city_id,area,
+            category_id,vendor_id,location_description,location_lat,location_lang,title, description,host_name,city_id,area,date,
             img: imgPath,
             img1: imgPath1,
             img2: imgPath2,
@@ -193,7 +193,7 @@ router.post("/edit/:id", upload.fields([
 ]), async (req, res) => {
     try {
         const { id } = req.params; // Extract the event ID from the route parameters
-        const { category_id, vendor_id, location_description, location_lat, location_lang, title, description, host_name,is_active ,city_id,area} = req.body;
+        const { category_id, vendor_id, location_description, location_lat, location_lang, title, description, host_name,is_active ,city_id,area,date,} = req.body;
 
         // Safely construct the image paths if files are uploaded
         const imgPath = req.files && req.files["img"] ? `/uploads/event/${req.files["img"][0].filename}` : null;
@@ -213,6 +213,7 @@ router.post("/edit/:id", upload.fields([
             is_active,
             city_id,
             area,
+            date,
             ...(imgPath && { img: imgPath }),       // Only update if a new image is uploaded
             ...(bgImgPath && { bg_img: bgImgPath }) // Only update if a new background image is uploaded
         }, { new: true });

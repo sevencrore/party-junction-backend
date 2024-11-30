@@ -72,7 +72,7 @@ router.get('/event/:id', async (req, res) => {
 router.post('/edit/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { event_id, date, price, slots } = req.body;
+        const { event_id, date, price, slots ,language,time} = req.body;
 
         // Build the update object based on the provided fields
         const updateData = {};
@@ -80,6 +80,8 @@ router.post('/edit/:id', async (req, res) => {
         if (date) updateData.date = date;
         if (price) updateData.price = price;
         if (slots) updateData.slots = slots;
+        if (time) updateData.time = time;
+        if (language) updateData.language = language;
 
         const eventDetail = await EventDetails.findByIdAndUpdate(id, updateData, { new: true });
         if (!eventDetail) {

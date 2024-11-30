@@ -14,6 +14,13 @@ const eventDetailsSchema = new mongoose.Schema({
         type: Number, 
         required: true 
     },  // Array of price options
+    language: { 
+        type: String, 
+         
+    },  // Array of price options
+    time: { 
+        type: String,  
+    },  // Array of price options
     slots: { 
         type: String, 
         required: true 
