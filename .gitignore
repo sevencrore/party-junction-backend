@@ -9,7 +9,7 @@ node_modules
 /coverage
 
 #uploads
-#uploads/
+uploads/
 
 # production
 /client/build
