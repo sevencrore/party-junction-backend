@@ -6,7 +6,7 @@ const path = require("path");
 
 // CORS configuration
 const allowedOrigins = [
-  "http://localhost:3001", // Local development
+  "http://localhost:3003", // Local development
   "http://www.thepartyjunction.in", // Replace with your frontend's domain
 ];
 
@@ -38,7 +38,7 @@ app.get("/health", (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3003;
 app.listen(PORT, async () => {
   try {
     await connect();
