@@ -24,6 +24,7 @@ const connect = async () => {
         // Use the connection string from .env file or a fallback (for testing)
         const uri = process.env.MONGO_URI || "mongodb+srv://msenterpriseswebsite:oYc5JmxgvlHxpE1B@serverlessinstance0.1vg6kb2.mongodb.net/?retryWrites=true&w=majority&appName=ServerlessInstance0";
 
+      // const uri ="mongodb://0.0.0.0:27017/bookmyshow"
         // Connect to MongoDB
         await mongoose.connect(uri, {
             useNewUrlParser: true,
