@@ -189,7 +189,10 @@ router.post("/create", upload.fields([
 
 router.post("/edit/:id", upload.fields([
     { name: "img", maxCount: 1 },
-    { name: "bg_img", maxCount: 1 }
+    { name: "bg_img", maxCount: 1 },
+    { name: 'img1', maxCount: 1 },
+  { name: 'img2', maxCount: 1 },
+  { name: 'img3', maxCount: 1 },
 ]), async (req, res) => {
     try {
         const { id } = req.params; // Extract the event ID from the route parameters
@@ -197,6 +200,9 @@ router.post("/edit/:id", upload.fields([
 
         // Safely construct the image paths if files are uploaded
         const imgPath = req.files && req.files["img"] ? `/uploads/event/${req.files["img"][0].filename}` : null;
+        const imgPath1 = req.files && req.files["img1"] ? `/uploads/event/${req.files["img1"][0].filename}` : null;
+        const imgPath2 = req.files && req.files["img2"] ? `/uploads/event/${req.files["img2"][0].filename}` : null;
+        const imgPath3 = req.files && req.files["img3"] ? `/uploads/event/${req.files["img3"][0].filename}` : null;
         const bgImgPath = req.files && req.files["bg_img"] ? `/uploads/event/${req.files["bg_img"][0].filename}` : null;
         console.log(req.body);
 
@@ -216,6 +222,9 @@ router.post("/edit/:id", upload.fields([
             date,
             full,
             ...(imgPath && { img: imgPath }),       // Only update if a new image is uploaded
+            ...(imgPath1 && { img1: imgPath1 }),       // Only update if a new image is uploaded
+            ...(imgPath2 && { img2: imgPath2 }),       // Only update if a new image is uploaded
+            ...(imgPath3 && { img3: imgPath3 }),       // Only update if a new image is uploaded
             ...(bgImgPath && { bg_img: bgImgPath }) // Only update if a new background image is uploaded
         }, { new: true });
 
