@@ -70,7 +70,55 @@ router.post("/create-payment", async (req, res) => {
   }
 });
 
-router.post("/callback", (req, res) => {
+// router.post("/callback", (req, res) => {
+//   try {
+//     // Extract headers and body
+//     const { headers, body } = req;
+//     const receivedXVerify = headers["x-verify"];
+//     const receivedResponse = body.response; // This is already Base64-encoded
+//     console.log(body);
+
+//     // Step 1: Recompute X-VERIFY
+//     // const verifyString = receivedResponse + urlPath + saltKey; // Only use `response`, not the entire body
+
+//     // // Step 2: Generate SHA256 hash
+//     // const sha256Hash = crypto.createHash("sha256").update(verifyString).digest("hex");
+
+//     // // Step 3: Append the salt index
+//     // const recomputedXVerify = `${sha256Hash}###${saltIndex}`;
+
+//     // console.log("Received X-Verify:", receivedXVerify);
+//     // console.log("Recomputed X-Verify:", recomputedXVerify);
+
+//     // // Step 2: Validate X-VERIFY
+//     // if (receivedXVerify !== recomputedXVerify) {
+//     //   console.error("X-Verify mismatch! Possible tampering detected.");
+//     //   return res.status(400).send({ error: "Invalid X-Verify checksum." });
+//     // }
+
+//     // Step 3: Decode and process the response
+//     const decodedResponse = JSON.parse(
+//       Buffer.from(receivedResponse, "base64").toString("utf-8")
+//     );
+//     console.log("Decoded Response:", decodedResponse);
+
+//     // Step 4: Save the received data for debugging
+//     const logData = {
+//       headers,
+//       decodedResponse,
+//     };
+//     const filePath = path.join(__dirname, "callback-log.json");
+//     fs.writeFileSync(filePath, JSON.stringify(logData, null, 2), "utf-8");
+
+//     // Step 5: Respond to the gateway
+//     res.status(200).send({ status: "received", ...decodedResponse });
+//   } catch (error) {
+//     console.error("Error processing callback:", error);
+//     res.status(500).send({ error: "Internal Server Error" });
+//   }
+// });
+
+router.post("/callback", async (req, res) => {
   try {
     // Extract headers and body
     const { headers, body } = req;
@@ -78,31 +126,37 @@ router.post("/callback", (req, res) => {
     const receivedResponse = body.response; // This is already Base64-encoded
     console.log(body);
 
-    // Step 1: Recompute X-VERIFY
-    // const verifyString = receivedResponse + urlPath + saltKey; // Only use `response`, not the entire body
-
-    // // Step 2: Generate SHA256 hash
-    // const sha256Hash = crypto.createHash("sha256").update(verifyString).digest("hex");
-
-    // // Step 3: Append the salt index
-    // const recomputedXVerify = `${sha256Hash}###${saltIndex}`;
-
-    // console.log("Received X-Verify:", receivedXVerify);
-    // console.log("Recomputed X-Verify:", recomputedXVerify);
-
-    // // Step 2: Validate X-VERIFY
-    // if (receivedXVerify !== recomputedXVerify) {
-    //   console.error("X-Verify mismatch! Possible tampering detected.");
-    //   return res.status(400).send({ error: "Invalid X-Verify checksum." });
-    // }
-
     // Step 3: Decode and process the response
     const decodedResponse = JSON.parse(
       Buffer.from(receivedResponse, "base64").toString("utf-8")
     );
     console.log("Decoded Response:", decodedResponse);
 
-    // Step 4: Save the received data for debugging
+    // Check for payment success
+    if (decodedResponse.success && decodedResponse.code === "PAYMENT_SUCCESS") {
+      const { merchantTransactionId } = decodedResponse.data;
+
+      // Step 4: Find the booking using merchantTransactionId
+      const booking = await Book.findById(merchantTransactionId);
+
+      if (booking) {
+        if (booking.payment === "NOT_DONE") {
+          // Update the payment status to DONE
+          booking.payment = "DONE";
+          await booking.save();
+
+          console.log(`Payment updated for booking ID: ${merchantTransactionId}`);
+        } else {
+          console.log(`Payment already processed for booking ID: ${merchantTransactionId}`);
+        }
+      } else {
+        console.error(`Booking not found for ID: ${merchantTransactionId}`);
+      }
+    } else {
+      console.log("Payment not successful or invalid response code.");
+    }
+
+    // Step 5: Save the received data for debugging
     const logData = {
       headers,
       decodedResponse,
@@ -110,8 +164,8 @@ router.post("/callback", (req, res) => {
     const filePath = path.join(__dirname, "callback-log.json");
     fs.writeFileSync(filePath, JSON.stringify(logData, null, 2), "utf-8");
 
-    // Step 5: Respond to the gateway
-    res.status(200).send({ status: "received", ...decodedResponse });
+    // Step 6: Respond to the gateway
+    res.status(200).send({ status: "received" });
   } catch (error) {
     console.error("Error processing callback:", error);
     res.status(500).send({ error: "Internal Server Error" });
