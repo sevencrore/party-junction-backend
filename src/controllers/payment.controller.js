@@ -8,11 +8,17 @@ const Book = require('../models/book.model');
 const router = express.Router();
 
 // Configuration
-const MID = "PHONEPEDEMOUAT";
-const saltKey = "a32fac47-cb1e-43bd-9402-5c855a8baff5";
+// const MID = "PHONEPEDEMOUAT";
+// const saltKey = "a32fac47-cb1e-43bd-9402-5c855a8baff5";
+// const saltIndex = 1;
+// const urlPath = "/pg/v1/pay"; // The relative path used in X-VERIFY
+// const fullUrl = `https://api-preprod.phonepe.com/apis/pg-sandbox${urlPath}`;
+
+const MID = "M220I081RMAD2";
+const saltKey = "74ff2838-550c-4eca-b1d8-86e9091233a5";
 const saltIndex = 1;
 const urlPath = "/pg/v1/pay"; // The relative path used in X-VERIFY
-const fullUrl = `https://api-preprod.phonepe.com/apis/pg-sandbox${urlPath}`;
+const fullUrl = `https://api.phonepe.com/apis/hermes${urlPath}`;
 
 // Payment Request Handler
 router.post("/create-payment", async (req, res) => {
