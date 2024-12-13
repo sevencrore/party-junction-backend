@@ -26,7 +26,7 @@ router.post("/create-payment", async (req, res) => {
       amount: amount * 100, // Convert amount to paise
       redirectUrl: "https://www.thepartyjunction.in/mybookings", // Default redirect URL
       redirectMode: "REDIRECT",
-      callbackUrl: "https://www.thepartyjunction.in/payment/callback",
+      callbackUrl: "https://www.api.thepartyjunction.in/payment/callback",
       paymentInstrument: {
         type: "PAY_PAGE",
       },
