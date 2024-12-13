@@ -28,7 +28,6 @@ const EventDeatilsController = require('./controllers/eventDetails.controller');
 const SlideImageController = require('./controllers/slideImage.controller');
 const UserWalletController = require('./controllers/userWallet.controller');
 const CoupanCodeController = require('./controllers/couponCode.Controller');
-const paymentController = require('./controllers/payment.controller');
 app.use("/users",userController);
 app.use("/movies",movieController);
 app.use("/book",bookController);
@@ -46,7 +45,6 @@ app.use("/eventDetails/",EventDeatilsController);
 app.use("/slideImage/",SlideImageController);
 app.use("/userwallet/",UserWalletController);
 app.use("/coupan/",CoupanCodeController);
-app.use("/payment", paymentController);
 const path = require('path');
 
 
