@@ -19,6 +19,10 @@ const bookSchema = new mongoose.Schema({
     price_per_head: { type: Number, required: true }, // Price per head for the event
     slot: { type: String, required: true }, // Available slots for the event
     city_name: { type: String, required: true }, // Available slots for the event
+    payment: {
+        type: String,
+        default: 'NOT_DONE',
+    },
 
 }, {
     versionKey: false, // Disable the version key (_v)

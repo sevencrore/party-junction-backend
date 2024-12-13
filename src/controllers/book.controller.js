@@ -113,6 +113,7 @@ router.post("/create", async (req, res) => {
             price_per_head,
             slot,
             city_name,
+            payment: 'NOT_DONE',
         });
 
         // Send the response with the created booking
@@ -123,6 +124,34 @@ router.post("/create", async (req, res) => {
         res.status(500).send({ error: 'An error occurred while creating the booking' });
     }
 });
+
+router.put('/update-payment/:bookingId', async (req, res) => {
+    try {
+        const { bookingId } = req.params;
+        const { paymentStatus } = req.body; // e.g., 'DONE' or 'FAILED'
+
+        if (!paymentStatus) {
+            return res.status(400).send({ error: 'Missing payment status' });
+        }
+
+        // Find the booking and update the payment field
+        const updatedBooking = await Book.findByIdAndUpdate(
+            bookingId,
+            { payment: paymentStatus },
+            { new: true }
+        );
+
+        if (!updatedBooking) {
+            return res.status(404).send({ error: 'Booking not found' });
+        }
+
+        res.status(200).send(updatedBooking);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: 'An error occurred while updating the payment status' });
+    }
+});
+
 
 router.patch("/update/:id", async (req, res) => {
 
