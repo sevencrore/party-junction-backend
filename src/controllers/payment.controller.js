@@ -72,39 +72,49 @@ router.post("/create-payment", async (req, res) => {
 
 router.post("/callback", (req, res) => {
   try {
-    const callbackData = req.body;
+    // Extract headers and body
+    const { headers, body } = req;
+    const receivedXVerify = headers["x-verify"];
+    const receivedResponse = body.response; // This is already Base64-encoded
+    console.log(body);
 
-    // Define the file path where the callback data will be saved
-    const filePath = path.join(__dirname, "../logs/callback-responses.json");
+    // Step 1: Recompute X-VERIFY
+    // const verifyString = receivedResponse + urlPath + saltKey; // Only use `response`, not the entire body
 
-    // Read the existing file content, if any
-    fs.readFile(filePath, "utf8", (err, data) => {
-      let existingData = [];
-      if (!err && data) {
-        try {
-          existingData = JSON.parse(data);
-        } catch (parseErr) {
-          console.error("Error parsing existing file data:", parseErr);
-        }
-      }
+    // // Step 2: Generate SHA256 hash
+    // const sha256Hash = crypto.createHash("sha256").update(verifyString).digest("hex");
 
-      // Append the new callback data to the existing data
-      existingData.push(callbackData);
+    // // Step 3: Append the salt index
+    // const recomputedXVerify = `${sha256Hash}###${saltIndex}`;
 
-      // Write the updated data back to the file
-      fs.writeFile(filePath, JSON.stringify(existingData, null, 2), (writeErr) => {
-        if (writeErr) {
-          console.error("Error writing to callback file:", writeErr);
-          return res.status(500).json({ success: false, message: "Failed to log callback data" });
-        }
+    // console.log("Received X-Verify:", receivedXVerify);
+    // console.log("Recomputed X-Verify:", recomputedXVerify);
 
-        console.log("Callback data logged successfully:", callbackData);
-        return res.status(200).json({ success: true, message: "Callback data logged successfully" });
-      });
-    });
+    // // Step 2: Validate X-VERIFY
+    // if (receivedXVerify !== recomputedXVerify) {
+    //   console.error("X-Verify mismatch! Possible tampering detected.");
+    //   return res.status(400).send({ error: "Invalid X-Verify checksum." });
+    // }
+
+    // Step 3: Decode and process the response
+    const decodedResponse = JSON.parse(
+      Buffer.from(receivedResponse, "base64").toString("utf-8")
+    );
+    console.log("Decoded Response:", decodedResponse);
+
+    // Step 4: Save the received data for debugging
+    const logData = {
+      headers,
+      decodedResponse,
+    };
+    const filePath = path.join(__dirname, "callback-log.json");
+    fs.writeFileSync(filePath, JSON.stringify(logData, null, 2), "utf-8");
+
+    // Step 5: Respond to the gateway
+    res.status(200).send({ status: "received" });
   } catch (error) {
-    console.error("Error handling callback:", error);
-    res.status(500).json({ success: false, message: "Error processing callback" });
+    console.error("Error processing callback:", error);
+    res.status(500).send({ error: "Internal Server Error" });
   }
 });
 
