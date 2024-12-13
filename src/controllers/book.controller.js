@@ -355,9 +355,10 @@ router.get('/user/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const userBookings = await Book.find(
-            { user_id: id }, // Filters
-        );
+        const userBookings = await Book.find({
+            user_id: id, // Match user ID
+            payment: 'DONE' // Filter for payment statusgst
+        });
 
         if (!userBookings) {
             return res.status(404).json({ message: "User Booking details not found ." });
