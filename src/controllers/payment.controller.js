@@ -26,7 +26,7 @@ router.post("/create-payment", async (req, res) => {
       amount: amount * 100, // Convert amount to paise
       redirectUrl: "https://www.thepartyjunction.in/mybookings", // Default redirect URL
       redirectMode: "REDIRECT",
-      callbackUrl: "https://www.api.thepartyjunction.in/payment/callback",
+      callbackUrl: "https://api.thepartyjunction.in/payment/callback",
       paymentInstrument: {
         type: "PAY_PAGE",
       },
@@ -111,7 +111,7 @@ router.post("/callback", (req, res) => {
     fs.writeFileSync(filePath, JSON.stringify(logData, null, 2), "utf-8");
 
     // Step 5: Respond to the gateway
-    res.status(200).send({ status: "received" });
+    res.status(200).send({ status: "received", ...decodedResponse });
   } catch (error) {
     console.error("Error processing callback:", error);
     res.status(500).send({ error: "Internal Server Error" });
