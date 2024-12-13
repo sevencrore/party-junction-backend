@@ -3,6 +3,7 @@ const crypto = require("crypto");
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+const Book = require('../models/book.model');
 
 const router = express.Router();
 
