@@ -355,25 +355,21 @@ router.get('/user/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Query to fetch user bookings where payment is DONE
-        const userBookings = await Book.find({
-            user_id: id, // Match user ID
-            payment: 'DONE' // Filter for payment status
-        });
+        const userBookings = await Book.find(
+            { user_id: id }, // Filters
+        );
 
-        // If no bookings are found, return a 404 response
-        if (!userBookings || userBookings.length === 0) {
-            return res.status(404).json({ message: "No completed bookings found for the user." });
+        if (!userBookings) {
+            return res.status(404).json({ message: "User Booking details not found ." });
         }
 
-        // Return the filtered bookings
         res.status(200).send(userBookings);
+
     } catch (error) {
-        console.error("Error fetching user bookings:", error);
-        res.status(500).json({ message: "Error fetching user bookings.", error });
+        console.error("Error fetching userBookings detail:", error);
+        res.status(500).json({ message: "Error fetching userBookings detail.", error });
     }
 });
-
 
 
 
