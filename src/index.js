@@ -6,9 +6,8 @@ const app = express();
 app.use(cors())
 app.use(express.json());
 
-app.use(bodyParser.json({ limit: '64mb' }));
-app.use(bodyParser.urlencoded({ limit: '64mb', extended: true }));
-
+app.use(express.json({ limit: '64mb' })); // Parse JSON payloads
+app.use(express.urlencoded({ limit: '64mb', extended: true })); // Parse URL-encoded data
 
 
 app.use((req,res,next)=>{   
